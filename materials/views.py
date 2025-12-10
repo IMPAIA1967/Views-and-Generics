@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import serializers, generics, viewsets
 
 from materials.models import Course, Lesson
