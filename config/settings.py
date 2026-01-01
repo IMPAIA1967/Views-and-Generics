@@ -10,6 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 SECRET_KEY = os.getenv('SECRET_KEY')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 
 DEBUG = True
 
@@ -26,8 +27,9 @@ INSTALLED_APPS = [
     "rest_framework",
     "users",
     "materials",
-    'django_filters',
-    'rest_framework_simplejwt',
+    "django_filters",
+    "rest_framework_simplejwt",
+    "drf_yasg"
 ]
 
 MIDDLEWARE = [
