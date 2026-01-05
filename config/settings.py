@@ -130,3 +130,7 @@ CELERY_TIMEZONE = 'UTC'
 
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'info@lms.local'  # пробник через консоль

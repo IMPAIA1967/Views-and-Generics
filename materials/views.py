@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from materials.models import Course, Lesson, Subscription
 from materials.paginators import MaterialsPagination
 from materials.serializers import LessonSerializer, CourseSerializer
-
+from materials.tasks import send_course_update_email
 
 
 class IsNotModerator(permissions.BasePermission):
@@ -37,6 +37,11 @@ class CourseViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        # Асинхронная рассылка
+        send_course_update_email.delay(course.id, course.title)
 
 # Для урока — Generic-классы
 class LessonListAPIView(generics.ListAPIView):
