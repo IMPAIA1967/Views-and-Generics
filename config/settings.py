@@ -29,7 +29,11 @@ INSTALLED_APPS = [
     "materials",
     "django_filters",
     "rest_framework_simplejwt",
-    "drf_yasg"
+    "drf_yasg",
+    'django_celery_results', # хранилище результатов в БД
+    'django_celery_beat',     # периодические задачи
+
+
 ]
 
 MIDDLEWARE = [
@@ -113,3 +117,16 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
+
+
+# Используем базу данных как брокер и backend
+CELERY_BROKER_URL = 'django://'
+CELERY_RESULT_BACKEND = 'django-db'
+
+# Часовой пояс
+CELERY_TIMEZONE = 'UTC'
+
+
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
