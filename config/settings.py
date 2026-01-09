@@ -118,10 +118,10 @@ REST_FRAMEWORK = {
     ],
 }
 
-
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 # Используем базу данных как брокер и backend
-CELERY_BROKER_URL = 'django://'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'django-db'
 
 # Часовой пояс
