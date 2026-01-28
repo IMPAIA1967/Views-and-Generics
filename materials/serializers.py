@@ -1,6 +1,4 @@
-import self
 from rest_framework import serializers
-
 from materials.models import Lesson, Course, Subscription
 from materials.validators import validate_video_url
 
