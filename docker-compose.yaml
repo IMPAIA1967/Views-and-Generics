@@ -54,7 +54,7 @@ services:
   celery_beat:
     build: .
     container_name: lms_celery_beat
-    # запускает планировщик периодических задач Celery Beat
+    # запускает планировщик периодических задач
     command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
       - .:/code
