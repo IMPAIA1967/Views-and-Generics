@@ -1,80 +1,74 @@
+version: '3.9'
+
 services:
   db:
     image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
-      - ./.env
+      - .env
     ports:
       - "5432:5432"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7-alpine
-    container_name: lms_redis
     ports:
       - "6379:6379"
 
+
+  migrate:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    command: python manage.py migrate --noinput
+
   web:
     build: .
-    command: >
-      bash -c "
-        python manage.py migrate --noinput &&  
-        python manage.py runserver 0.0.0.0:8000
-      "
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
       - static_volume:/code/static
     ports:
       - "8000:8000"
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
+      migrate:
+        condition: service_completed_successfully
     env_file:
-      - ./.env
+      - .env
 
   celery_worker:
     build: .
     container_name: lms_celery_worker
-    command: celery -A config worker --loglevel=info  # запускает воркер Celery для обработки фоновых задач
+    command: celery -A config worker --loglevel=info
     volumes:
       - .:/code
     env_file:
-      - ./.env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0 # указывает, что брокером сообщений служит Redis
+      - .env
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
-      web:
-        condition: service_started
+      migrate:
+        condition: service_completed_successfully
 
   celery_beat:
     build: .
     container_name: lms_celery_beat
-    # запускает планировщик периодических задач
     command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
       - .:/code
     env_file:
-      - ./.env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
+      - .env
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
-      celery_worker:
-        condition: service_started
+      migrate:
+        condition: service_completed_successfully
 
 volumes:
   postgres_data:
