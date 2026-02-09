@@ -10,12 +10,7 @@ def create_stripe_product(name):
     return product
 
 
-def create_stripe_price(product_id, amount):
-    """Создаём цену в Stripe"""
-    price = stripe.Price.create(product_id=product_id, unit_amount=int(amount), currency="rub")
-
-
-def create_stripe_price(product_id: str, amount_rub: float) -> stripe.Price:
+def create_stripe_price(product_id, amount_rub):
     """Создаём цену в Stripe"""
     amount_in_kopecks = int(amount_rub * 100)  # рубли → копейки
     price = stripe.Price.create(
@@ -27,16 +22,16 @@ def create_stripe_price(product_id: str, amount_rub: float) -> stripe.Price:
 
 
 def create_stripe_checkout_session(price_id, success_url, cancel_url):
-    """ Создаём сессию оплаты в Stripe"""
+    """Создаём сессию оплаты в Stripe"""
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],  # Разрешаем только карты
         line_items=[{
-            'price': price_id, # Какую цену оплачиваем
-            'quantity': 1, # количество курсов
+            'price': price_id,  # Какую цену оплачиваем
+            'quantity': 1,      # количество курсов
         }],
-        mode='payment', # одноразовый платёж
-        success_url=success_url,     # URL успеха
-        cancel_url=cancel_url        # URL отмены
+        mode='payment',         # одноразовый платёж
+        success_url=success_url,  # URL успеха
+        cancel_url=cancel_url     # URL отмены
     )
     return session
 

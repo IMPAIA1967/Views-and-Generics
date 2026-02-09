@@ -21,4 +21,3 @@ def send_course_update_email(course_id, course_title, emails=None):
             fail_silently=False,
         )
     return f'Писем отправлено: {len(email)} шт'
-
