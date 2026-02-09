@@ -1,4 +1,3 @@
-from django.test import TestCase
 from rest_framework.test import APITestCase
 from django.contrib.auth import get_user_model
 from .models import Course, Lesson
@@ -6,13 +5,15 @@ from .models import Course, Lesson
 
 User = get_user_model()
 
+
 class MyTests(APITestCase):
     def test_user_can_create_lesson(self):
+        # Создаём пользователя
+        user = User.objects.create_user(
+            username='test@test.com', password='123'
+        )
 
-        #  Создаём пользователя
-        user = User.objects.create_user(username='test@test.com', password='123')
-
-        #  Создаём курс
+        # Создаём курс
         course = Course.objects.create(title='Мой курс', owner=user)
 
         # Делаем вид, что пользователь зашёл на сайт

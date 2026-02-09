@@ -15,6 +15,3 @@ def validate_video_url(value):
     # Разрешаем только домены, которые заканчиваются на 'youtube.com'
     if not domain.endswith('youtube.com'):
         raise ValidationError('Ссылка на видео должна вести только на youtube.com')
-
-
-

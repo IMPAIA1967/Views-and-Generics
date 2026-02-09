@@ -12,23 +12,28 @@ class LessonSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-def gef_lesson_count(obj):
+def get_lesson_count(obj):
     return obj.lesson_set.count()
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    lessons = LessonSerializer(many=True, read_only=True) # вложенные уроки
-    lessons_count = serializers.SerializerMethodField() # Поле для количества уроков
-    is_subscribed = serializers.SerializerMethodField() # призрак подписки
+    lessons = LessonSerializer(many=True, read_only=True)  # вложенные уроки
+    lessons_count = serializers.SerializerMethodField()  # поле для количества уроков
+    is_subscribed = serializers.SerializerMethodField()  # призрак подписки
 
     class Meta:
         model = Course
         fields = '__all__'
 
-def get_is_subscribed(self, obj):
-    """Проверяем, подписан ли пользователь на курс"""
-    request = self.context.get('request')
-    if request and request.user.is_authenticated: # проверка залогинен ли пользователь
-        return Subscription.objects.filter(user=request.user, course=obj).exists()
-    return False
+    def get_lessons_count(self, obj):
+        """Возвращает количество уроков в курсе"""
+        return get_lesson_count(obj)
 
+    def get_is_subscribed(self, obj):
+        """Проверяем, подписан ли пользователь на курс"""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Subscription.objects.filter(
+                user=request.user, course=obj
+            ).exists()
+        return False

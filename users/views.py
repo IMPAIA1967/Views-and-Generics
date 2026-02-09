@@ -6,8 +6,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from materials.models import Course
-from materials.stripe_service import create_stripe_product, create_stripe_price, create_stripe_checkout_session, \
-    retrieve_stripe_session
+from materials.stripe_service import (
+    create_stripe_product,
+    create_stripe_price,
+    create_stripe_checkout_session,
+    retrieve_stripe_session,
+)
 from users.filters import PaymentFilter
 from users.models import Payment, User
 from users.serializers import PaymentSerializer, RegisterSerializer, UserSerializer
@@ -17,9 +21,9 @@ class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     filters_backends = [DjangoFilterBackend]
-    filterset_class =  PaymentFilter # класс фильтра
-    ordering_fields = ['payment_date'] # сортировка по дате
-    ordering = ['-payment_date'] # по умолчанию сортировка по убыванию
+    filterset_class = PaymentFilter  # класс фильтра
+    ordering_fields = ['payment_date']  # сортировка по дате
+    ordering = ['-payment_date']  # по умолчанию сортировка по убыванию
 
 
 @api_view(['POST'])
@@ -28,7 +32,10 @@ def register_user(request):
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return Response({"message": "Пользователь успешно зарегистрирован!"}, status=status.HTTP_201_CREATED)
+        return Response(
+            {"message": "Пользователь успешно зарегистрирован!"},
+            status=status.HTTP_201_CREATED
+        )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -39,6 +46,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # Пользователь видит только свой профиль
         return User.objects.filter(id=self.request.user.id)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -80,7 +88,6 @@ def create_stripe_payment(request):
         "pay_url": session.url,
         "payment_id": payment.id
     })
-
 
 
 @api_view(['GET'])

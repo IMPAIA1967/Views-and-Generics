@@ -31,7 +31,7 @@ def block_inactive_users():
             inactive_users.update(is_active=False)
             result = f"✅ Заблокировано {count} неактивных пользователей"
         else:
-            result = f"✅ Неактивных пользователей не найдено"
+            result = "✅ Неактивных пользователей не найдено"
 
         print(result)
         print("=" * 50)
